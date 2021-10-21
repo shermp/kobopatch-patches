@@ -86,7 +86,7 @@ def main():
         get_values(max_values)
             
         print("\nEnter values and offsets for the following limits\n")
-        get_values(limits)
+        get_values(limits, add_to_offset=False)
 
     except ValueError as ve:
         print("Using Test values!")
