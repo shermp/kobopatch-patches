@@ -97,13 +97,13 @@ def main():
     print('')
     print('  # Initial font size:')
     for val in min_values.values():
-        print(f'  - ReplaceInt: {{Offset: {val[2]}, Find: {val[0]}, Replace: {val[1]}}}')
+        print(f'  - ReplaceInt: {{Offset: {val[2]:>3}, Find: {val[0]:>3}, Replace: {val[1]:>3}}}')
     print('  # Increment:')
     for val in limits.values():
-        print(f'  - ReplaceInt: {{Offset: {val[2]}, Find: {val[0]}, Replace: {val[1]}}} # {val[3]}')
+        print(f'  - ReplaceInt: {{Offset: {val[2]:>3}, Find: {val[0]:>3}, Replace: {val[1]:>3}}} # {val[3]}')
     print('  # Now increment by +4 until final font size:')
     for val in max_values.values():
-        print(f'  - ReplaceInt: {{Offset: {val[2]}, Find: {val[0]}, Replace: {val[1]}}}')
+        print(f'  - ReplaceInt: {{Offset: {val[2]:>3}, Find: {val[0]:>3}, Replace: {val[1]:>3}}}')
 
     # Calculate and print the help string
     orig_ranges: dict[tuple: list] = {}
