@@ -45,45 +45,49 @@ def calc_steps(min: int, max: int, limits: list):
         size += 4
     return num_steps
 
+def get_values(vals: "dict[str: list]", add_to_offset=True):
+    for k in vals:
+        inp = input(f'({k}) <offset> [new_size ({vals[k][1]})] [orig_size ({vals[k][0]})]: ').split()
+        if len(inp) == 0:
+            raise ValueError
+        i = 2
+        for val in inp:
+            val = int(val, 0)
+            if i == 2 and add_to_offset:
+                val += 2
+            vals[k][i] = val
+            i -= 1
+
 def main():
     min_values = {
-        'other': (8, 8, int('0x01', 16) + 2),
-        'storm': (11, 11, int('0x02', 16) + 2),
-        'alyssum nova': (10, 10, int('0x03', 16) + 2),
-        'daylight': (14, 14, int('0x04', 16) + 2)
+        'other': [8, 8, int('0x01', 16) + 2],
+        'storm': [11, 11, int('0x02', 16) + 2],
+        'alyssum nova': [10, 10, int('0x03', 16) + 2],
+        'daylight': [14, 14, int('0x04', 16) + 2]
     }
     max_values = {
-        'other': (90, 80, int('0x05', 16) + 2),
-        'phoenix': (122, 88, int('0x06', 16) + 2),
-        'dragon': (150, 108, int('0x07', 16) + 2),
-        'daylight': (195, 132, int('0x08', 16) + 2)
+        'other': [90, 80, int('0x05', 16) + 2],
+        'phoenix': [122, 88, int('0x06', 16) + 2],
+        'dragon': [150, 108, int('0x07', 16) + 2],
+        'daylight': [195, 132, int('0x08', 16) + 2]
     }
 
     limits = {
-        21: (43, int('0x09', 16), 'Add font sizes in increments of 1 until this size exceeded'),
-        22: (44, int('0x0a', 16), 'Continue from this font size'),
-        49: (67, int('0x0b', 16), 'Add font sizes in increments of 2 until this size exceeded'),
-        50: (68, int('0x0c', 16), 'Continue from this font size')
+        1: [21, 43, int('0x09', 16), 'Add font sizes in increments of 1 until this size exceeded'],
+        2: [22, 44, int('0x0a', 16), 'Continue from this font size'],
+        3: [49, 67, int('0x0b', 16), 'Add font sizes in increments of 2 until this size exceeded'],
+        4: [50, 68, int('0x0c', 16), 'Continue from this font size']
     }
     try:
-        print("Enter values and offsets for device specific min font sizes. \nNote, +2 will be automatically added to offset when required")
-        for k in min_values:
-            size, new_size, offset = input(f'{k} <size> <new_size> <offset>: ').split(' ')
-            min_values[k] = (int(size), int(new_size), int(offset, 0) + 2)
-        
-        print("\nEnter values and offsets for device specific max font sizes. \nNote, +2 will be automatically added to offset when required")
-        for k in max_values:
-            size, new_size, offset = input(f'{k} <size> <new_size> <offset>: ').split(' ')
-            max_values[k] = (int(size), int(new_size), int(offset, 0) + 2)
-        print("\nEnter offsets for the following limits")
-        for s in limits:
-            repl, offset = input(f'Replacement (zero for default) and Offset for limit {s}: ').split(' ')
-            o = int(offset, 0)
-            r = int(repl)
-            if r == 0:
-                r = limits[s][0]
-            comment = limits[s][2]
-            limits[s] = (r, o, comment)
+        print("\nEnter values and offsets for device specific min font sizes. \nNote, +2 will be automatically added to offset when required\n")
+        get_values(min_values)
+
+        print("\nEnter values and offsets for device specific max font sizes. \nNote, +2 will be automatically added to offset when required\n")
+        get_values(max_values)
+            
+        print("\nEnter values and offsets for the following limits\n")
+        get_values(limits)
+
     except ValueError as ve:
         print("Using Test values!")
 
@@ -95,8 +99,8 @@ def main():
     for val in min_values.values():
         print(f'  - ReplaceInt: {{Offset: {val[2]}, Find: {val[0]}, Replace: {val[1]}}}')
     print('  # Increment:')
-    for k, val in limits.items():
-        print(f'  - ReplaceInt: {{Offset: {val[1]}, Find: {k}, Replace: {val[0]}}} # {val[2]}')
+    for val in limits.values():
+        print(f'  - ReplaceInt: {{Offset: {val[2]}, Find: {val[0]}, Replace: {val[1]}}} # {val[3]}')
     print('  # Now increment by +4 until final font size:')
     for val in max_values.values():
         print(f'  - ReplaceInt: {{Offset: {val[2]}, Find: {val[0]}, Replace: {val[1]}}}')
@@ -141,8 +145,8 @@ def main():
         new_ranges[new_range].append(device)
 
     print('\nThe following lines should be added to the "Custom font sizes" comments\n')
-    limits_orig = list(limits)
-    limits_new = [limits[limits_orig[0]][0], limits[limits_orig[1]][0], limits[limits_orig[2]][0], limits[limits_orig[3]][0]]
+    limits_orig = [limits[1][0], limits[2][0], limits[3][0], limits[4][0]]
+    limits_new = [limits[1][1], limits[2][1], limits[3][1], limits[4][1]]
     print(comment_old.format(limits_new[1], limits_new[3]))
     print('  #')
 
